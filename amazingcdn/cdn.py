@@ -9,6 +9,10 @@ class Cdn:
         log(LogLevel.INFO, 'HTTP CDN ' + str(request))
         # log(LogLevel.DEBUG, 'headers =>', dict(request.headers))
 
+        if ".." in str(request.rel_url):
+            log(LogLevel.WARN, 'HTTP CDN Forbidden:   ' + str(request.rel_url))
+            return web.HTTPForbidden()
+
         try:
             val = open('amazingcdn\\' + str(request.rel_url), 'rb').read()
             return web.Response(body=val)
