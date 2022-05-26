@@ -25,7 +25,8 @@ class RandomNamesMessage(Message):
         elif self.request.name_part_type == 'Family_3':
             self.response.names = random.sample(FAMILY_3, self.request.amount)
         else:
-            raise NotImplementedError('unknown random name type')
+            raise NotImplementedError(
+                f'unknown random name type: {self.request.name_part_type}')
         message_header.result_code = ResultCode.OK
         message_header.app_code = AppCode.OK
 
@@ -39,12 +40,13 @@ class RandomNamesRequest(SerializableMessage):
         raise NotImplementedError
 
     def deserialize(self, bit_stream: BitStream):
-        bit_stream.read_start()
+        if not bit_stream.read_start():
+            return
         self.amount = bit_stream.read_int()
         self.name_part_type = bit_stream.read_str()
 
-    def __str__(self):
-        return str({'amount': self.amount, 'name_part_type': self.name_part_type})
+    def to_dict(self):
+        return {'amount': self.amount, 'name_part_type': self.name_part_type}
 
 
 class RandomNamesResponse(SerializableMessage):
@@ -60,5 +62,5 @@ class RandomNamesResponse(SerializableMessage):
     def deserialize(self, bit_stream: BitStream):
         raise NotImplementedError
 
-    def __str__(self):
-        return str({'names': self.names})
+    def to_dict(self):
+        return {'names': self.names}

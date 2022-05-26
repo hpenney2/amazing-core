@@ -31,11 +31,12 @@ class ClientVersionRequest(SerializableMessage):
         raise NotImplementedError
 
     def deserialize(self, bit_stream: BitStream):
-        bit_stream.read_start()
+        if not bit_stream.read_start():
+            return
         self.client_name = bit_stream.read_str()
 
-    def __str__(self):
-        return str({'client_name': self.client_name})
+    def to_dict(self):
+        return {'client_name': self.client_name}
 
 
 class ClientVersionResponse(SerializableMessage):
@@ -45,7 +46,7 @@ class ClientVersionResponse(SerializableMessage):
     With <133853.true> game will require to update
     """
 
-    def __init__(self,):
+    def __init__(self):
         self.client_version: str = None
 
     def serialize(self, bit_stream: BitStream):
@@ -55,5 +56,5 @@ class ClientVersionResponse(SerializableMessage):
     def deserialize(self, bit_stream: BitStream):
         raise NotImplementedError
 
-    def __str__(self):
-        return str({'client_version': self.client_version})
+    def to_dict(self):
+        return {'client_version': self.client_version}

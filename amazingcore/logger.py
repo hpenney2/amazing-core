@@ -1,36 +1,31 @@
 from enum import Enum
-from datetime import datetime
-import rich
+from rich.console import Console
+from rich.panel import Panel
+from rich.pretty import Pretty
+
+console = Console(highlight=False, log_path=False, markup=True)
 
 
 class LogLevel(Enum):
-    TRACE = 1
-    DEBUG = 2
-    INFO = 3
-    WARN = 4
-    ERROR = 5
-    FATAL = 6
+    DEBUG = 10
+    INFO = 20
+    WARN = 30
+    ERROR = 40
+    FATAL = 50
 
 
-def log(message: str, log_level: LogLevel = 3):
-    ts = datetime.now().strftime('%d/%b/%y %H:%M:%S')
-    if LogLevel(log_level) == LogLevel.TRACE:
-        rich.print(f'[bold cyan][TRACE] {ts} > {message}[/]')
-    elif LogLevel(log_level) == LogLevel.DEBUG:
-        rich.print(f'[bold green][DEBUG] {ts} > {message}[/]')
+def log(log_level: LogLevel, message: str, debug_object: any = None):
+    if LogLevel(log_level) == LogLevel.DEBUG:
+        console.log(f'[bold green]DEBUG[/]  {message}')
+        if debug_object:
+            console.log(Panel(Pretty(debug_object), expand=False))
     elif LogLevel(log_level) == LogLevel.INFO:
-        rich.print(f'[bold white][INFO]  {ts} > {message}[/]')
+        console.log(f'[bold blue]INFO[/]  {message}')
     elif LogLevel(log_level) == LogLevel.WARN:
-        rich.print(f'[bold yellow][WARN]  {ts} > {message}[/]')
+        console.log(f'[bold yellow]WARN[/]  {message}')
     elif LogLevel(log_level) == LogLevel.ERROR:
-        rich.print(f'[bold red][ERROR] {ts} > {message}[/]')
+        console.log(f'[bold red]ERROR[/] {message}')
+        console.print_exception()
     elif LogLevel(log_level) == LogLevel.FATAL:
-        rich.print(f'[bold white on red][FATAL] > {ts} {message}[/]')
-
-
-# log('trace text', LogLevel.TRACE)
-# log('debug text', LogLevel.DEBUG)
-# log('debug text', LogLevel.INFO)
-# log('debug text', LogLevel.WARN)
-# log('debug text', LogLevel.ERROR)
-# log('debug text', LogLevel.FATAL)
+        console.log(f'[bold white on red]FATAL[/] {message}')
+        console.print_exception()
